@@ -18,24 +18,3 @@ def stop_buff(zones: int, dailyATR: float):
     targetPrices = []
 
     stopLossBuffer = roundup(dailyATR, 2)
-
-#maximumRiskAmount = accountSize * 0.02; % 
-# maximumRiskAmount = 120;
-# maximumPositionSize = floor(maximumRiskAmount / tradeRisk)
-
-# if entrySize <= 0.5
-#     modifier=1/5
-# elif entrySize > 0.5 && entrySize <= 1
-#     modifier=1/4
-# else
-#     modifier=1/3
-
-
-#positionSize = floor(maximumRiskAmount / tradeRisk);
-#maximumRiskAmount = 120
-#Long:
-    #tradeRisk = abs(proximalDZ - stopLoss)
-    #stopLoss = stopLoss = distalDZ - stopLossBuffer
-#Short:
-    #tradeRisk = abs(proximalSZ - stopLoss)
-    #stopLoss = distalSZ + stopLossBuffer

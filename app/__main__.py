@@ -13,11 +13,11 @@ EXIT_MSG = "Thank you for using the Trade Builder"
 def main():
     print(LOGIN_MSG + "\n" + USAGE_MSG)
 
-    # changed, result = ConfigHandler.fetch("app/builder.conf")
-    # if changed:
-    #     print(f"\nConfig loaded succesfully: the following have been modified:\n{result}")
-    # else:
-    #     print(f"No config detected: {result}")
+    changed = ConfigHandler.fetch("app/builder.conf")
+    if changed:
+        print(f"\nConfig loaded succesfully: the following have been modified:\n")
+    else:
+        print(f"No config detected: ")
     active = True
     while active:
         active = handler.cycle_input(VERSION)

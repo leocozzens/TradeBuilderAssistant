@@ -1,5 +1,5 @@
 # External imports
-from copy   import deepcopy
+from copy   import copy, deepcopy
 import json
 
 class ZoneSpec:
@@ -35,7 +35,7 @@ DEFAULT_CONFIG = {
 class ConfigHandler:
     currentConfig: dict = deepcopy(DEFAULT_CONFIG)
     @classmethod
-    def fetch(cls, path: str) -> bool | str:
+    def fetch(cls, path: str) -> bool | list:
         try:
             with open(path) as f:
                 data = json.load(f)
@@ -43,26 +43,42 @@ class ConfigHandler:
             return False, e
         if(type(data) != dict):
             return False, "Improper configuration formatting"
-        return True, cls.loadtocurrent(data)
+        cls.loadtoconfig(cls.currentConfig, data)
+        return True
 
     @classmethod
-    def loadtocurrent(cls, data: dict) -> str:
-        dataKeys = list(data.keys())
-        configKeys = cls.converttostr(list(cls.currentConfig.keys()))
+    def loadtoconfig(cls, config: dict, new: dict):
+        configKeys = list(config.keys())
+        newKeys = {}
+        for i in list(new.keys()):
+            found = False
+            for j in configKeys:
+                if type(j)(i) == j:
+                    newKeys[j] = i
+                    found = True
+                    break
+            if not found:
+                print(f"Could not find key value {i} in config")
 
-
-        changed = ""
-        for i in dataKeys:
-            if i in configKeys:
-                changed += f"{i} was changed\n"
-        return changed
+        for i in list(newKeys.keys()):
+            if(type(new[newKeys[i]]) == dict):
+                cls.loadtoconfig(config[i], new[newKeys[i]])
+            else:
+                try:
+                    config[i] = type(config[i])(new[newKeys[i]])
+                    print(f"Value of {i} is {config[i]}")
+                except:
+                    print(f"Unable to set {i}, incompatible value")
                 
     @classmethod
     def reset(cls):
         cls.currentConfig = deepcopy(DEFAULT_CONFIG)
 
     @staticmethod
-    def converttostr(data: list) -> list:
+    def converttotype(data: list, t: type) -> list:
         for i in range(0, len(data)):
-            data[i] = str(data[i])
+            try:
+                data[i] = t(data[i])
+            except:
+                continue
         return data
