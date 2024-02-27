@@ -7,7 +7,7 @@ TREND_TYPES = [ "up", "sideways", "down" ]
 class Attribute:
     def __init__(self, val: str, allowed_set: list):
         if val not in allowed_set:
-            raise ValueError(f"Invalid initalization {self.__class__.__name__.lower()}")
+            raise ValueError(f"Invalid value for {self.__class__.__name__.lower()}")
         self.val = val
 
     def __repr__(self):
