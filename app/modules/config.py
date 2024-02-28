@@ -10,7 +10,7 @@ class ZoneSpec:
         self.zoneSet = zoneSet
         if(zoneSet == None): self.sizes = None
         else: self.sizes = list(zoneSet.keys()).sort()
-    
+
     def __repr__(self) -> str:
         return "Test" #TODO: Modify this temp value
 
@@ -54,11 +54,11 @@ class ConfigHandler:
         return "", data
 
     @classmethod
-    def set_config(cls, path: str, new: dict) -> dict:
+    def set_config(cls, name: str, new: dict) -> dict:
         ConfigHandler.reset()
-        ConfigHandler.set_profile_name(path)
+        ConfigHandler.set_profile_name(name)
         return ConfigHandler.load_to_config(cls.currentConfig, new)
-    
+
     # Expects new key values to be strings, as json only supports strings as key values
     @classmethod
     def load_to_config(cls, config: dict, new: dict) -> dict:
@@ -90,7 +90,6 @@ class ConfigHandler:
             else:
                 try:
                     config[i] = type(config[i])(new[newKeys[i]])
-                    print(f"{str(i)} = {config[i]}")
                 except Exception as e:
                     failed[newKeys[i]] = f"Unable to set value: {str(e)}"
 
@@ -102,9 +101,8 @@ class ConfigHandler:
         cls.profileName = "Default"
 
     @classmethod
-    def set_profile_name(cls, path: str):
-        path = path.replace('\\', '/')
-        cls.profileName = path.split('/')[-1].split('.')[0]
+    def set_profile_name(cls, name: str):
+        cls.profileName = name
 
     @classmethod
     def current_profile_info(cls) -> str:
@@ -117,3 +115,7 @@ class ConfigHandler:
     @classmethod
     def get_current_profile(cls) -> dict:
         return cls.currentConfig
+
+    @staticmethod
+    def get_name_from_path(path: str):
+        return path.replace('\\', '/').split('/')[-1].split('.')[0]
