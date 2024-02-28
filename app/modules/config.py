@@ -43,6 +43,7 @@ class ConfigHandler:
 
     @classmethod
     def fetch(cls, path: str) -> str | dict:
+        path = path.replace('\\', '/')
         try:
             with open(path) as f:
                 data = json.load(f)

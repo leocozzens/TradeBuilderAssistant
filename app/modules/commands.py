@@ -142,7 +142,7 @@ def save_session(data: list, offset: int) -> str:
     if MemoryManager.save_set(saveName):
         return f"Successfully saved current setup to memory as {saveName}"
 
-    if check_all(input(f"Saved trade setup {saveName} already exists. Would you like to overwrite (Y/N)? ").lower(), ['y', 'yes']):
+    if check_all(input(f"Saved trade setup {saveName} already exists. Would you like to overwrite (Y/N)? "), ['y', 'yes']):
         MemoryManager.overwrite_set(saveName)
         return f"Successfully overwrote existing trade: {saveName}, and saved the current setup to memory"
     return f"Operation failed, {saveName} already exists"
@@ -193,9 +193,9 @@ def load_profile(data: list, offset: int) -> str:
     if len(data) <= offset or data[offset] == "":
         return ConfigHandler.current_profile_info()
 
-    if(data[offset] == "default"):
+    if(data[offset].lower() == "default"):
         ConfigHandler.reset()
-        return f"Resetting configuration\n{ConfigHandler.current_profile_info()}"
+        return f"Resetting configuration...\n{ConfigHandler.current_profile_info()}"
 
     profilePath = get_name(data, offset, len(data) - 1) + ".conf"
     status, result = load_config(profilePath)

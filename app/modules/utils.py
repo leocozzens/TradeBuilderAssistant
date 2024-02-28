@@ -2,6 +2,7 @@
 from modules.attributes import Attribute
 
 def check_all(source: str, items: list):
+    source = source.lower()
     for i in items:
         if source == i:
             return True

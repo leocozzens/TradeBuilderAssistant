@@ -4,7 +4,6 @@ import modules.commands as cmd
 
 def cycle_input(version: str):
     data = input(">> ")
-    data = data.lower() # Convert user string to lower case
     data = data.split(' ') # Divide string into a list of words
 
     if check_all(data[0], ['h', 'help']):
