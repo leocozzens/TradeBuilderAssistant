@@ -14,7 +14,7 @@ def load_config(path: str) -> bool | str:
     if error != "":
         return False, error
 
-    failed = ConfigHandler.set_config(path, ConfigHandler.get_current_profile(), data)
+    failed = ConfigHandler.set_config(path, data)
     failedList = list(failed.keys())
     if len(failedList) < 1:
         return True, "All configuration values set successfully"

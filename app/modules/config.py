@@ -54,10 +54,10 @@ class ConfigHandler:
         return "", data
 
     @classmethod
-    def set_config(cls, path: str, config: dict, new: dict) -> dict:
+    def set_config(cls, path: str, new: dict) -> dict:
         ConfigHandler.reset()
         ConfigHandler.set_profile_name(path)
-        return ConfigHandler.load_to_config(config, new)
+        return ConfigHandler.load_to_config(cls.currentConfig, new)
     
     # Expects new key values to be strings, as json only supports strings as key values
     @classmethod
@@ -90,8 +90,9 @@ class ConfigHandler:
             else:
                 try:
                     config[i] = type(config[i])(new[newKeys[i]])
+                    print(f"{str(i)} = {config[i]}")
                 except Exception as e:
-                    failed[newKeys[i]] = f"Unable to set value: {e}"
+                    failed[newKeys[i]] = f"Unable to set value: {str(e)}"
 
         return failed
 
