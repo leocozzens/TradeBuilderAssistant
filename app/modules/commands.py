@@ -2,9 +2,10 @@
 import os
 import platform
 # Local imports
-from modules.utils      import check_all, enum_dict, get_name, gen_map
+from modules.utils      import check_all, enum_dict, get_name, gen_map, load_config
 from modules.mechanisms import generate_position
 from modules.memory     import MemoryManager
+from modules.config     import ConfigHandler
 
 # Constants
 ALL_SPECIFIER = "all"
@@ -14,16 +15,23 @@ COMMANDS = [
     "set [PROPERTY] [VALUE]     - Set chosen property to desired setting",
     "get [PROPERTY]             - Get chosen property value",
     "info [PROPERTY/CMD/NAME]   - Request info about a desired property, command or saved trade setup",
-    "map [NAME]                 - Show map of current trade properties along with their status | Defaults to current setup",
-    "run [NAME]                 - Run current trade setup and request completion of required fields | Defaults to current setup",
+    "map [NAME]                     - Show map of current trade properties along with their status\n"
+    "                           - Defaults to current setup",
+    "run [NAME]                 - Run current trade setup and request completion of required fields\n"
+    "                               - Defaults to current setup",
     "clear                      - Clear terminal",
     "access                     - Show all trade setups currently saved into memory and their names,and their respective tickers",
-    f"wipe [PROPERTY/{ALL_SPECIFIER.upper()}]        - Wipe desired property and resets it to None | Use {ALL_SPECIFIER.lower()} to reset all properties",
+    f"wipe [PROPERTY/{ALL_SPECIFIER.upper()}]        - Wipe desired property and resets it to None\n"
+    f"                               - Use {ALL_SPECIFIER.lower()} to reset all properties",
     "save [NAME]                - Save current trade setup to memory under specified name",
     "load [NAME]                - Load desired current trade setup from memory",
     "delete [NAME]              - Remove desired trade setup from memory",
-    "import [PATH]              - Import trade setup from storage (TO BE IMPLEMENTED)",
-    "export [NAME] [PATH]       - Export trade setup to storage | Specify the moniker 'card' to export all setups in memory (TO BE IMPLEMENTED)",
+    "upload [PATH]              - Upload trade setup to memory from storage",
+    "output [NAME] [PATH]       - Export trade setup to storage\n"
+    "                               - Specify the moniker 'card' to export all setups in memory (TO BE IMPLEMENTED)",
+    "profile [PATH]             - Load configuration profile specified by a certain path, then enumerate current profile\n"
+    "                               - Leaving this empty will enumerate the current configuration profile.\n"
+    "                               - Specify 'Default' to revert back to the default profile.",
     "help                       - List information about all available features",
     "exit                       - Exit this application"
 ]
@@ -159,7 +167,7 @@ def delete_session(data: list, offset: int) -> str:
     else:
         return f"Operation failed, {saveName} does not exist"
 
-def pull_file(data: list, offset: int) -> str:
+def upload_file(data: list, offset: int) -> str:
     if len(data) <= offset or data[offset] == "":
         return "Operation failed, path specified"
 
@@ -168,7 +176,7 @@ def pull_file(data: list, offset: int) -> str:
     if status == True:
         return f"Successfully loaded {savePath} from storage, to memory"
     else:
-        return f"Operation failed, could not pull {savePath}: {status}"
+        return f"Operation failed, could not upload {savePath}: {status}"
 
 def output_file(data: list, offset: int) -> str:
     if len(data) <= offset or data[offset] == "":
@@ -180,3 +188,18 @@ def output_file(data: list, offset: int) -> str:
         return f"Successfully exported current save from memory, to {savePath}"
     else:
         return f"Operation failed, could not export save to {savePath}: {status}"
+
+def load_profile(data: list, offset: int) -> str:
+    if len(data) <= offset or data[offset] == "":
+        return ConfigHandler.current_profile_info()
+
+    if(data[offset] == "default"):
+        ConfigHandler.reset()
+        return f"Resetting configuration\n{ConfigHandler.current_profile_info()}"
+
+    profilePath = get_name(data, offset, len(data) - 1) + ".conf"
+    status, result = load_config(profilePath)
+    if status:
+        return f"Config loaded successfuly; {result}\n{ConfigHandler.current_profile_info()}"
+    else:
+        return f"Error loading config; {result}\nNo changes were made"

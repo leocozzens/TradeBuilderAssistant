@@ -1,6 +1,8 @@
 # External imports
-from copy   import copy, deepcopy
+from copy                    import deepcopy
 import json
+# Local imports
+from modules.utils           import gen_map
 
 class ZoneSpec:
     def __init__(self, lowest: float, zoneSet: dict | None):
@@ -45,17 +47,20 @@ class ConfigHandler:
             with open(path) as f:
                 data = json.load(f)
         except Exception as e:
-            return str(e), {}
-        if(type(data) == dict):
+            return str(e) if str(e) != "" else f"Could not load data from {path}", {}
+        if(type(data) != dict):
             return "Improper configuration formatting", {}
-        cls.currentConfig = deepcopy(DEFAULT_CONFIG)
-        cls.profileName = path.split('/')[-1].split('.')[0]
+        return "", data
 
-        return "", cls.loadtoconfig(cls.currentConfig, data)
-
+    @classmethod
+    def set_config(cls, path: str, config: dict, new: dict) -> dict:
+        ConfigHandler.reset()
+        ConfigHandler.set_profile_name(path)
+        return ConfigHandler.load_to_config(config, new)
+    
     # Expects new key values to be strings, as json only supports strings as key values
     @classmethod
-    def loadtoconfig(cls, config: dict, new: dict) -> dict:
+    def load_to_config(cls, config: dict, new: dict) -> dict:
         failed: dict = {}
         configKeys = list(config.keys())
 
@@ -76,7 +81,7 @@ class ConfigHandler:
 
         for i in list(newKeys.keys()):
             if(type(new[newKeys[i]]) == dict):
-                subFailed = cls.loadtoconfig(config[i], new[newKeys[i]])
+                subFailed = cls.load_to_config(config[i], new[newKeys[i]])
                 for j in list(subFailed.keys()):
                     subFailed[newKeys[i] + " " + j] = subFailed[j]
                     del subFailed[j]
@@ -88,11 +93,20 @@ class ConfigHandler:
                     failed[newKeys[i]] = f"Unable to set value: {e}"
 
         return failed
-                
+
     @classmethod
     def reset(cls):
         cls.currentConfig = deepcopy(DEFAULT_CONFIG)
         cls.profileName = "Default"
+
+    @classmethod
+    def set_profile_name(cls, path: str):
+        path = path.replace('\\', '/')
+        cls.profileName = path.split('/')[-1].split('.')[0]
+
+    @classmethod
+    def current_profile_info(cls) -> str:
+       return  f"Using config profile: {ConfigHandler.get_profile_name()}\n{gen_map(ConfigHandler.get_current_profile())}"
 
     @classmethod
     def get_profile_name(cls) -> str:

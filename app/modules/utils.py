@@ -7,6 +7,25 @@ def check_all(source: str, items: list):
             return True
     return False
 
+def load_config(path: str) -> bool | str:
+    from modules.config     import ConfigHandler
+    error, data = ConfigHandler.fetch(path)
+    if error != "":
+        return False, error
+
+    failed = ConfigHandler.set_config(path, ConfigHandler.get_current_profile(), data)
+    failedList = list(failed.keys())
+    if len(failedList) < 1:
+        return True, "All configuration values set successfully"
+
+    fmt = "{} - {}"
+    failedStr = fmt.format(failedList[0], failed[failedList[0]])
+    for i in range(1, len(failedList)):
+        failedStr += f", " + fmt.format(failedList[i], failed[failedList[i]])
+
+    return True, f"The following failed: {failedStr}"
+
+
 def enum_dict(keys: list, target: dict, offset: int = 0):
     if len(keys) <= offset or keys[offset] == '':
         return None, "No property specified"
