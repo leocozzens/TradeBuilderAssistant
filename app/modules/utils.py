@@ -1,6 +1,3 @@
-# Local imports
-from modules.attributes import Attribute
-
 def check_all(source: str, items: list):
     source = source.lower()
     for i in items:
@@ -9,7 +6,7 @@ def check_all(source: str, items: list):
     return False
 
 def load_config(path: str) -> bool | str:
-    from modules.config     import ConfigHandler
+    from modules.config import ConfigHandler
     error, data = ConfigHandler.fetch(path)
     if error != "":
         return False, error
@@ -23,9 +20,7 @@ def load_config(path: str) -> bool | str:
     failedStr = fmt.format(failedList[0], failed[failedList[0]])
     for i in range(1, len(failedList)):
         failedStr += f", " + fmt.format(failedList[i], failed[failedList[i]])
-
     return True, f"The following failed: {failedStr}"
-
 
 def enum_dict(keys: list, target: dict, offset: int = 0):
     if len(keys) <= offset or keys[offset] == '':
@@ -70,6 +65,7 @@ def gen_map(target: dict, level: int = 0, last: bool = False) -> str:
     return mapStr
 
 def get_primitives(target: dict) -> dict:
+    from modules.attributes import Attribute
     setupTable = {}
     for key in target:
         if type(target[key]) == dict:
