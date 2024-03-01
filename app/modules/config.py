@@ -4,37 +4,30 @@ import json
 # Local imports
 from modules.utils           import gen_map
 
-class ZoneSpec:
-    def __init__(self, lowest: float, zoneSet: dict | None):
-        self.lowestFract = lowest
-        self.zoneSet = zoneSet
-        if(zoneSet == None): self.sizes = None
-        else: self.sizes = list(zoneSet.keys()).sort()
+class Portion(float):
+    PORTION_MAX = 1.0
+    def __new__(cls, raw):
+        return super().__new__(cls, cls.verify_input(raw))
 
-    def __repr__(self) -> str:
-        return "Test" #TODO: Modify this temp value
-
-    def get_activation(self, szSize: float, entry: float) -> float:
-        activation = ZoneSpec.calc_activation(entry, szSize, self.lowestFract)
-        if(self.sizes == None):
-            return activation
-        for i in self.sizes:
-            if szSize > i:
-                return activation
-            activation = ZoneSpec.calc_activation(entry, szSize, self.zoneSet[i])
-        return activation
-
-    @staticmethod
-    def calc_activation(entry: float, szSize: float, fract: float) -> float:
-        return entry + szSize / fract
+    @classmethod
+    def verify_input(cls, raw):
+        if not isinstance(raw, (int, float)):
+            try:
+                raw = float(raw)
+            except:
+                raise TypeError("Portion size must be a number")
+        raw = abs(raw)
+        if(raw > cls.PORTION_MAX):
+            raise ValueError(f"Portion size must be less than or equal to {cls.PORTION_MAX:.1f}")
+        return raw
 
 DEFAULT_CONFIG = {
-    "LIQUIDITY_FRACTION": 0.50,
-    "TARGETS":  { 0.80: 0.80, 1.00: 0.20 },
-    "ZONE_SPEC": ZoneSpec(5, { 0.5: 4, 1.0: 3 }),
-    "15":   { "ENTRY_BUFFER":  0.02, "SL_BUFFER": 0.02 },
-    "hour": { "ENTRY_BUFFER":  0.02, "SL_BUFFER": 0.10 },
-    "day":  { "ENTRY_BUFFER":  0.04, "SL_BUFFER": 0.10 }
+    "LIQUIDITY_FRACTION": Portion(0.50),
+    "TARGETS":  { Portion(0.80): Portion(0.80), Portion(1.00): Portion(0.20) },
+    "ACTIVATION_PORTION": Portion(0.33),
+    "15":   { "ENTRY_BUFFER":  Portion(0.02), "SL_BUFFER": Portion(0.02) },
+    "hour": { "ENTRY_BUFFER":  Portion(0.02), "SL_BUFFER": Portion(0.10) },
+    "day":  { "ENTRY_BUFFER":  Portion(0.04), "SL_BUFFER": Portion(0.10) }
 }
 
 class ConfigHandler:

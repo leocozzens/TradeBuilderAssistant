@@ -19,7 +19,7 @@ def long_position(setupTable: dict, configSettings: dict) -> str:
     elif setupTable["szone"]["proximal"] <= setupTable["dzone"]["proximal"]:
         return "Error: Value of SZ proximal cannot be equal to or lower than value of DZ proximal"
 # Activation rule calculation
-    activationPrice = configSettings["ZONE_SPEC"].get_activation(dzSize, setupTable["entry"])
+    activationPrice = calc_activation(setupTable["entry"], dzSize, configSettings["ACTIVATION_PORTION"])
     activationRule = roundup(activationPrice, HUNDREDTH)
 # Limit/stop price calculation
     limitBuffer = configSettings[setupTable["timeframe"]]["ENTRY_BUFFER"]
@@ -72,7 +72,7 @@ def short_position(setupTable: dict, configSettings: dict) -> str:
     elif setupTable["szone"]["proximal"] <= setupTable["dzone"]["proximal"]:
         return "Error: Value of SZ proximal cannot be equal to or lower than value of DZ proximal"
 # Activation rule calculation
-    activationPrice = configSettings["ZONE_SPEC"].get_activation(szSize, setupTable["entry"])
+    activationPrice = calc_activation(setupTable["entry"], szSize, configSettings["ACTIVATION_PORTION"])
     activationRule = roundup(activationPrice, HUNDREDTH)
 # Limit/stop price calculation
     limitBuffer = configSettings[setupTable["timeframe"]]["ENTRY_BUFFER"]

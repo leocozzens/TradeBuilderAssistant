@@ -13,6 +13,9 @@ def roundreg(value: float, digit: int) -> float:
     multiplier = 10 ** digit
     return round(value * multiplier) / multiplier
 
+def calc_activation(entry: float, zoneSize: float, activationRule: float) -> float:
+    return entry + zoneSize * activationRule
+
 def stop_buff(zones: int, dailyATR: float):
     targets = zones + 1
     targetPrices = []
